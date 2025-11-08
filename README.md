@@ -1,339 +1,227 @@
-```md
-# 🎨 Collaborative Canvas — Real-Time Drawing (Vanilla JS + Node.js)
 
-A lightweight, production-ready starter for a **real-time collaborative drawing** app.  
-Client is plain HTML/CSS/JS (Canvas 2D + Pointer Events). Server is Node.js + Express + Socket.IO.  
-Supports rooms, presence, undo/redo, clear canvas, cursors, and optional chat. Ships with rate limiting and horizontal-scaling via Redis adapter.
+ 🎨 Collaborative Canvas
 
----
+A simple project for a real-time drawing app. You can draw with other people at the same time.
 
-## ✨ Features
+This project uses plain HTML, CSS, and JavaScript (on the front-end) and Node.js with Socket.IO (on the back-end). It's a great starting point if you want to build your own live drawing tool.
 
-- **Live multi-user drawing**: pen / eraser, color, width
-- **Rooms**: share by URL `/room/:id`
-- **Presence**: online list + remote cursors
-- **Undo / Redo**: per client (broadcast to keep room in sync)
-- **Clear Canvas**: room-wide reset
-- **Optional chat** (toggle in UI)
-- **Latency-tolerant streaming**: `stroke:begin` → `stroke:point`* → `stroke:end`
-- **Rate limiting** + payload caps, basic abuse protection
-- **Scale-out ready** using Redis pub/sub adapter
+-----
 
----
+ ✨ Features
 
-## 🧱 Tech Stack
+  * **Live Drawing:** Draw with multiple people in real-time.
+  * **Tools:** Use a pen or an eraser.
+  * **Rooms:** Create private drawing rooms by sharing a link (like `/room/my-room-123`).
+  * **Presence:** See who is online in your room.
+  * **Live Cursors:** See where other people's mouse cursors are.
+  * **Undo / Redo:** Fix your mistakes.
+  * **Clear Canvas:** A button to clear the drawing for everyone.
+  * **Chat:** A simple chat box you can turn on or off.
 
-- **Client:** Vanilla JS (Canvas 2D, Pointer Events, ES Modules)
-- **Transport:** WebSocket (**Socket.IO**)
-- **Server:** Node.js, Express, Socket.IO
-- **Optional:** Redis (Socket.IO Redis adapter) for multi-instance deployments
-- **Dev Tooling:** Nodemon, ESLint (optional)
+-----
 
----
+ 🧱 Tech Stack
 
-## 📦 Project Structure
+  * **Client (Front-end):** Vanilla JS (no frameworks), HTML Canvas
+  * **Server (Back-end):** Node.js, Express
+  * **Real-time:** WebSockets (using **Socket.IO**)
+  * **Scaling (Optional):** Redis (to connect multiple servers)
+
+-----
+
+ 📦 Project Structure
+
+Here is how the files are organized:
 
 ```
-
 collaborative-canvas/
 ├── server/
-│   ├── server.js           # HTTP + WebSocket server, routes, middleware
-│   ├── roomState.js        # in-memory room registry + helpers
-│   ├── rateLimit.js        # token bucket limiter per socket
-│   └── adapters/
-│       └── redis.js        # optional Socket.IO Redis adapter
+│   ├── server.js           # Main server file
+│   ├── roomState.js        # Keeps track of rooms
+│   ├── rateLimit.js        # Stops spam
+│   └── adapters/
+│       └── redis.js        # Helps connect multiple servers
 ├── public/
-│   ├── index.html          # landing - create/join room
-│   ├── room.html           # drawing room UI
-│   ├── styles.css          # minimal styling
-│   ├── client.js           # canvas logic (draw, undo/redo, presence, chat)
-│   └── vendor/socket.io.min.js
+│   ├── index.html          # Join/Create room page
+│   ├── room.html           # The drawing room
+│   ├── styles.css          # Stylesheet
+│   ├── client.js           # All the front-end drawing logic
+│   └── vendor/socket.io.min.js
 ├── .env.example
 ├── package.json
 └── README.md
+```
 
-````
+-----
 
-> If your filenames differ, adjust imports accordingly.
+ ⚙️ Setup
 
----
+Follow these steps to run the project on your computer.
 
-## ⚙️ Setup
+1.  **Clone the project:**
 
-```bash
-git clone <your-repo>
-cd collaborative-canvas
-cp .env.example .env        # then edit
-npm install
-npm run dev                 # http://localhost:3000
-````
+    ```bash
+    git clone <your-repo>
+    cd collaborative-canvas
+    ```
 
-### `.env` (Environment Variables)
+2.  **Create your settings file:**
+
+    ```bash
+    cp .env.example .env
+    ```
+
+    Now, open the `.env` file and edit the settings.
+
+3.  **Install packages:**
+
+    ```bash
+    npm install
+    ```
+
+4.  **Run the server:**
+
+    ```bash
+    npm run dev
+    ```
+
+    The server will start at **http://localhost:3000**.
+
+ `.env` (Settings File)
+
+Here is what the settings in your `.env` file mean.
 
 ```env
+# The port your server will run on
 PORT=3000
+
+# Set to "production" when you go live
 NODE_ENV=development
 
-# Room + client limits
+# How many people can join one room
 MAX_ROOM_SIZE=32
+# How many times you can undo
 MAX_UNDO_STACK=50
 
-# Socket rate limiting (token bucket)
-RATE_LIMIT_POINTS=400       # tokens per minute per socket
-RATE_LIMIT_BURST=80         # maximum instant burst
+# Settings to prevent spam (how many messages per minute)
+RATE_LIMIT_POINTS=400
+RATE_LIMIT_BURST=80
 
-# CORS / security
+# The website URL that is allowed to connect (for security)
 ALLOWED_ORIGINS=http://localhost:3000
 
-# Scale-out (optional)
+# (Optional) Add your Redis URL here if you want to use multiple servers
 REDIS_URL=redis://localhost:6379
 ```
 
----
+-----
 
-## ▶️ Usage
+ ▶️ How to Use
 
-1. Visit **`http://localhost:3000`**
-2. Create a room or paste an existing room link, e.g.
-   `http://localhost:3000/room/abc123`
-3. Draw together! Multiple tabs/browsers will sync.
+1.  Open **`http://localhost:3000`** in your browser.
+2.  Type a room name to create a new room, or paste a link to join one.
+3.  Share the room link (e.g., `http://localhost:3000/room/abc123`) with your friends.
+4.  Draw together\!
 
-### Default Controls
+ Controls
 
-* **Pen / Eraser**: toolbar toggle
-* **Color / Width**: toolbar inputs
-* **Undo**: `Ctrl/Cmd + Z`
-* **Redo**: `Ctrl/Cmd + Shift + Z` or `Ctrl/Cmd + Y`
-* **Clear Canvas**: toolbar button (broadcast)
-* **Shift** (optional): constrain to straight line
-* **Touch + stylus** supported (Pointer Events)
+  * **Tools:** Click the **Pen** or **Eraser** button.
+  * **Color/Width:** Use the inputs in the toolbar.
+  * **Undo:** `Ctrl + Z` (or `Cmd + Z` on Mac)
+  * **Redo:** `Ctrl + Shift + Z` or `Ctrl + Y`
+  * **Clear:** Click the "Clear Canvas" button.
 
----
+-----
 
-## 🧪 NPM Scripts
+ 🧩 How It Works (Simple Version)
 
-```jsonc
-{
-  "scripts": {
-    "dev": "nodemon server/server.js",
-    "start": "node server/server.js",
-    "lint": "eslint ."
-  }
-}
-```
+This app uses **WebSockets** (Socket.IO) to send messages very quickly.
 
----
+The server's main job is to **pass messages**. When you draw, your browser sends a message to the server, and the server instantly sends that message to everyone else in your room.
 
-## 🔌 Socket API (Events & Payloads)
-
-**Namespace:** `/ws`
-
-### Client → Server
-
-| Event             | Payload                                                            |
-| ----------------- | ------------------------------------------------------------------ |
-| `room:join`       | `{ roomId, userName }`                                             |
-| `stroke:begin`    | `{ roomId, strokeId, x, y, color, width, tool }`                   |
-| `stroke:point`    | `{ roomId, strokeId, x, y }` *(streamed ~60–120 Hz, rate-limited)* |
-| `stroke:end`      | `{ roomId, strokeId, x, y }`                                       |
-| `undo`/`redo`     | `{ roomId }`                                                       |
-| `canvas:clear`    | `{ roomId }`                                                       |
-| `presence:cursor` | `{ roomId, x, y }`                                                 |
-| `chat:message`    | `{ roomId, text }`                                                 |
-
-### Server → Client
-
-| Event             | Payload                          |
-| ----------------- | -------------------------------- |
-| `room:state`      | `{ participants, snapshot? }`    |
-| `presence:join`   | `{ userId, userName }`           |
-| `presence:leave`  | `{ userId }`                     |
-| `stroke:begin`    | (mirrors client payload)         |
-| `stroke:point`    | (mirrors client payload)         |
-| `stroke:end`      | (mirrors client payload)         |
-| `undo` / `redo`   | `{ roomId }`                     |
-| `canvas:clear`    | `{ roomId }`                     |
-| `presence:cursor` | `{ userId, x, y }`               |
-| `chat:message`    | `{ userId, userName, text, ts }` |
-| `error`           | `{ code, message }`              |
-
-**Size targets**:
-
-* `stroke:point` ≈ **≤ 64 bytes**
-* `presence:cursor` ≈ **≤ 48 bytes** (throttled to ~20 Hz)
-
----
-
-## 🧩 Architecture
-
-A multi-user canvas where each client streams pointer strokes to a room over WebSockets.
-Server is a **stateless relay** with light coordination (room membership, rate limiting, idempotent `strokeId`s).
-Designed for **horizontal scaling** using Socket.IO’s Redis adapter.
+By default, the server does **not** save the drawing. If the server restarts, the canvas will be empty.
 
 ```
-+----------+        WebSocket         +-----------+        Pub/Sub        +-----------+
-| Client A |  <-------------------->  |  Node.js  |  <----------------->  |   Redis   |
-| (Canvas) |                          |  (Socket) |                       | (Adapter) |
-+----------+                          +-----------+                       +-----------+
-     ^                                       ^                                   ^
-     | draw events                            | broadcast                         |
-     v                                       v                                   v
-+----------+                             +-----------+                       +-----------+
-| Client B |                             |  (More)   |                       |  (More)   |
-+----------+                             +-----------+                       +-----------+
++----------+       +-----------+
+| You      | <---> | Node.js   |
+| (Browser)|       | Server    |
++----------+       +-----------+
+     ^                   |
+     |                   v
+     |             +-----------+
+     +------------>| Friend    |
+                   | (Browser) |
+                   +-----------+
 ```
 
-### Components
+ What happens when you...
 
-**Client (public/):**
+**...Join a Room?**
 
-* **Canvas renderer** (2D context), double-buffered for smooth paths
-* **Stroke model**: `{ strokeId, tool, color, width, points:[{x,y,t}] }`
-* **Input**: Pointer Events; uses `getCoalescedEvents()` when available
-* **State**: local undo/redo; remote strokes merged live
-* **Net**: Socket.IO client with auto-reconnect and backoff
-* **Presence**: remote cursors throttled (~20 Hz)
+1.  Your browser sends a `room:join` message.
+2.  The server adds you to the room.
+3.  The server tells you who is already there (`room:state`).
+4.  The server tells everyone else that you joined (`presence:join`).
 
-**Server (server/):**
+**...Draw?**
 
-* **HTTP**: serves static assets and room pages
-* **WS**: Socket.IO namespace `/ws` for rooms & events
-* **Rooms**: in-memory registry `{ roomId → { participants, snapshot?, lruStrokeIds } }`
-* **Guards**: payload validation, token bucket limiter, room size limit
-* **Scale-out**: Redis adapter to broadcast across instances
+1.  When you click, your browser sends `stroke:begin`.
+2.  As you move your mouse, it sends `stroke:point` messages.
+3.  When you let go, it sends `stroke:end`.
+4.  The server sends all these messages to everyone else in the room so they can see your drawing live.
 
-### Data Flow
+-----
 
-**Join**
+ 💾 How to Save Drawings (Optional)
 
-1. `room:join { roomId, userName }`
-2. Server validates, adds member, sends `room:state` (+ optional snapshot), broadcasts `presence:join`.
+Right now, drawings are **lost** when the server restarts.
 
-**Draw**
+If you want to save them permanently, you could:
 
-1. Client emits `stroke:begin` (local `strokeId`).
-2. Streams `stroke:point` until `stroke:end` (throttled, rate-limited).
-3. Server echoes to room; clients render incrementally; origin reconciles after echo.
+1.  **Save as a Picture:** Every 5 minutes, save the canvas as a PNG file. When a new person joins, send them the picture first.
+2.  **Save the Strokes:** Save all the drawing messages (like `stroke:begin`) to a JSON file. When a new person joins, send them the whole file so their browser can "re-draw" everything very fast.
 
-**Undo/Redo**
+**A hybrid approach is often best:** Save a picture (PNG) *and* the last 50 strokes. This is fast to load and accurate.
 
-* Client emits `undo`/`redo`; server re-broadcasts so all clients apply the same logical change by `strokeId`.
+-----
 
-**Clear**
+ 📈 How to Scale (For Many Users)
 
-* `canvas:clear` by a client → server broadcasts → all reset view (also a good snapshot boundary).
+  * **One Server:** Works great for small groups.
+  * **Many Servers:** If you get thousands of users, you will need more than one server. To make them work together, you must use the **Redis adapter**.
+  * Just add your `REDIS_URL` to the `.env` file, and the servers will use Redis to share messages between rooms.
 
-### Consistency
+-----
 
-* **Idempotency**: LRU per room for recent `strokeId`s to drop duplicates.
-* **Ordering**: process in arrival order; last-write-wins at stroke level.
-* **Reconnect**: server sends `room:state` + latest snapshot; client repaints base and replays recent stroke buffer.
+ 🔒 Security
 
----
+  * **Allowed Origins:** Only lets your own website connect to the server (stops other websites from using your server).
+  * **Rate Limiting:** Stops users from sending too many messages (spamming) and slowing down the server.
+  * **Payload Validation:** The server checks every message to make sure it's valid.
 
-## 🚀 Performance
+-----
 
-### Client
+ 🧰 Troubleshooting (Fixing Problems)
 
-* **Coalesced pointer events** for dense sampling when supported.
-* **rAF drawing**; incremental path updates (no full redraw on every point).
-* **Double buffer** or offscreen canvas (optional) to avoid tearing.
-* **Undo stack** bounded by `MAX_UNDO_STACK`.
+  * **"I can't connect\!"**
+      * Check your `.env` file. Is `ALLOWED_ORIGINS` set to your website URL?
+  * **"Drawing is slow or laggy."**
+      * You might be sending too many messages. Check the `RATE_LIMIT_` settings.
+  * **"My friends in the same room see different things."**
+      * If you are using multiple servers, make sure you have **Redis** set up correctly.
 
-### Server
+-----
 
-* **Token bucket** limiter per socket (`RATE_LIMIT_*`).
-* **Payload caps** (e.g., `~4KB` per event) with schema checks.
-* **Broadcast** to room; Redis adapter makes fan-out O(subscribers).
+ 🗺️ Future Ideas (Roadmap)
 
-**Targets**
+  * Add shapes (rectangles, circles) and text tools.
+  * Add layers.
+  * Record and replay drawings.
+  * Export drawings as PNG or SVG files.
+  * Support pen pressure for tablets.
 
-* ~**60 FPS** local rendering on modern hardware.
-* **<100 ms** round-trip echo (LAN).
-* Typical room **2–16 users**; hard max adjustable.
-
----
-
-## 💾 Persistence & Snapshots (Optional)
-
-Default is ephemeral (in-memory).
-
-* **When**: every N strokes or every M seconds.
-* **What**: PNG raster of canvas + compact stroke list (JSON) + `version`.
-* **Where**: S3/MinIO (preferred) or local FS. Index table `{roomId, version, snapshotKey}`.
-* **Restore**: on join, server emits latest snapshot → client paints PNG → replays strokes after that `version`.
-
-**Trade-offs**
-
-* PNG: instant paint, heavier storage.
-* JSON strokes: smaller, fully vector, slower to replay.
-* **Hybrid recommended**: PNG baseline + recent strokes window.
-
----
-
-## 📈 Scaling
-
-* **Single node**: in-memory, simplest.
-* **Multi node**: enable Redis adapter; rooms become logical across instances.
-* **Sharding**: sticky routing by `roomId` hash (reverse proxy) for locality.
-* **K8s**: app is stateless; Redis/S3 externalize state.
-
-**Observability**
-
-* `/healthz` probe
-* Room counts, per-event TPS, error rate
-* P50/P95/P99 latency (Prometheus + Grafana)
-* Log sampling for `stroke:*` spikes
-
----
-
-## 🔒 Security
-
-* **Origin allow-list** via `ALLOWED_ORIGINS`
-* **Join tokens** (JWT) scoped to `roomId` (optional)
-* **Payload validation** + size limits
-* **Rate limiting** with disconnect on abuse
-* **Room privacy levels**
-
-  * Public: short, guessable IDs
-  * Private: signed invites, short-lived tokens
-  * Protected: authenticated users + ACL (owner/mods)
-
----
-
-## ✅ Testing Strategy
-
-* **Unit**: room state, limiter, schema validators
-* **Integration**: join/draw/undo flows using `socket.io-client`
-* **Load**: k6/artillery pushing `stroke:point` at target TPS; watch drops & latency
-* **E2E**: Playwright — two browsers drawing in same room, visual diff via canvas PNG
-
----
-
-## 🧰 Troubleshooting
-
-* **Cannot connect**: check CORS; set `ALLOWED_ORIGINS`
-* **Laggy lines**: lower client sampling (≤ 60 Hz), ensure rate limiter isn’t throttling
-* **Desyncs**: enable Redis adapter across instances, check clock skew
-* **Memory growth**: confirm undo stack and snapshot GC are bounded
-
----
-
-## 🗺️ Roadmap
-
-* Shapes & text tools, selection/transform
-* Layers with CRDT (e.g., Yjs) for object-level edits
-* Recording & replay (timeline scrubber)
-* Exports: PNG/SVG/JSON
-* Mobile-first UI and pen pressure (`PointerEvent.pressure`)
-
----
+-----
 
 ## 📜 License
 
-MIT — free to use and modify. Attribution appreciated.
-
----
-
-```
-```
+MIT — This project is free for you to use and change.
