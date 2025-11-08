@@ -16,7 +16,6 @@ This project uses plain HTML, CSS, and JavaScript (on the front-end) and Node.js
   * **Live Cursors:** See where other people's mouse cursors are.
   * **Undo / Redo:** Fix your mistakes.
   * **Clear Canvas:** A button to clear the drawing for everyone.
-  * **Chat:** A simple chat box you can turn on or off.
 
 -----
 
@@ -118,9 +117,9 @@ REDIS_URL=redis://localhost:6379
 
  ▶️ How to Use
 
-1.  Open **`http://localhost:3000`** in your browser.
+1.  Open **`https://collaborative-canvas-gxcf.onrender.com`** or **`https://canvas-production-3d08.up.railway.app/`** in your browser.
 2.  Type a room name to create a new room, or paste a link to join one.
-3.  Share the room link (e.g., `http://localhost:3000/room/abc123`) with your friends.
+3.  Share the room link with your friends.
 4.  Draw together\!
 
  Controls
@@ -170,47 +169,7 @@ By default, the server does **not** save the drawing. If the server restarts, th
 3.  When you let go, it sends `stroke:end`.
 4.  The server sends all these messages to everyone else in the room so they can see your drawing live.
 
------
 
- 💾 How to Save Drawings (Optional)
-
-Right now, drawings are **lost** when the server restarts.
-
-If you want to save them permanently, you could:
-
-1.  **Save as a Picture:** Every 5 minutes, save the canvas as a PNG file. When a new person joins, send them the picture first.
-2.  **Save the Strokes:** Save all the drawing messages (like `stroke:begin`) to a JSON file. When a new person joins, send them the whole file so their browser can "re-draw" everything very fast.
-
-**A hybrid approach is often best:** Save a picture (PNG) *and* the last 50 strokes. This is fast to load and accurate.
-
------
-
- 📈 How to Scale (For Many Users)
-
-  * **One Server:** Works great for small groups.
-  * **Many Servers:** If you get thousands of users, you will need more than one server. To make them work together, you must use the **Redis adapter**.
-  * Just add your `REDIS_URL` to the `.env` file, and the servers will use Redis to share messages between rooms.
-
------
-
- 🔒 Security
-
-  * **Allowed Origins:** Only lets your own website connect to the server (stops other websites from using your server).
-  * **Rate Limiting:** Stops users from sending too many messages (spamming) and slowing down the server.
-  * **Payload Validation:** The server checks every message to make sure it's valid.
-
------
-
- 🧰 Troubleshooting (Fixing Problems)
-
-  * **"I can't connect\!"**
-      * Check your `.env` file. Is `ALLOWED_ORIGINS` set to your website URL?
-  * **"Drawing is slow or laggy."**
-      * You might be sending too many messages. Check the `RATE_LIMIT_` settings.
-  * **"My friends in the same room see different things."**
-      * If you are using multiple servers, make sure you have **Redis** set up correctly.
-
------
 
  🗺️ Future Ideas (Roadmap)
 
@@ -220,8 +179,3 @@ If you want to save them permanently, you could:
   * Export drawings as PNG or SVG files.
   * Support pen pressure for tablets.
 
------
-
-## 📜 License
-
-MIT — This project is free for you to use and change.
