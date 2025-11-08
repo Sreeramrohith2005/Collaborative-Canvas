@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Collaborative Canvas</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <header>
+    <h1>🎨 Collaborative Canvas</h1>
+    <div id="controls" style="display:none">
+      <label>Tool:
+        <select id="tool">
+          <option value="brush">Brush</option>
+          <option value="eraser">Eraser</option>
+        </select>
+      </label>
+      <label>Color: <input type="color" id="color" value="#0ea5e9"></label>
+      <label>Width: <input type="range" id="width" min="1" max="40" value="6"></label>
+      <button id="undo" title="Global Undo (Ctrl+Z)">Undo</button>
+      <button id="redo" title="Global Redo (Ctrl+Shift+Z)">Redo</button>
+      <button id="clear">Clear</button>
+      <span id="room"></span>
+      <span id="share" style="margin-left:8px; opacity:.8"></span>
+      <span id="latency" title="Round trip latency" style="margin-left:8px">⏱️ -- ms</span>
+    </div>
+  </header>
+
+  <main>
+    <!-- Landing (no room) -->
+    <section id="landing" class="panel">
+      <h2>Start or Join a Board</h2>
+      <div class="card">
+        <button id="createBtn">➕ Create New Board</button>
+        <div id="createdInfo" class="muted" style="margin-top:6px; display:none;"></div>
+      </div>
+
+      <div class="card">
+        <label for="joinCode">Have a code?</label>
+        <div class="join-row">
+          <input id="joinCode" placeholder="e.g. 7F2KQX" maxlength="8" />
+          <button id="joinBtn">Join</button>
+        </div>
+        <small class="muted">You can also open short links like <code>/r/CODE</code>.</small>
+      </div>
+    </section>
+
+    <!-- App (when room=...) -->
+    <aside id="users" style="display:none"><h3>Online</h3><ul id="userList"></ul></aside>
+    <section id="stage" style="display:none">
+      <canvas id="canvas" width="1200" height="800"></canvas>
+    </section>
+  </main>
+
+  <footer>
+    <small>Tip: Use <code>?room=CODE</code> or click “Create New Board” to generate a code. Works on Chrome/Firefox/Safari.</small>
+  </footer>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script type="module" src="/main.js"></script>
+</body>
+</html>
